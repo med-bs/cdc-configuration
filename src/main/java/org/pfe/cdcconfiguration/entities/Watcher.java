@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Watcher {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

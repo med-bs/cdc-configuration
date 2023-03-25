@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @NoArgsConstructor @AllArgsConstructor
 public class WatcherConfig {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String connectorClass;
     private String tasksMax;
