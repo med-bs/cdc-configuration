@@ -3,6 +3,7 @@ package org.pfe.cdcconfiguration.services;
 import lombok.AllArgsConstructor;
 import org.pfe.cdcconfiguration.dtos.WatcherPageDTO;
 import org.pfe.cdcconfiguration.entities.Watcher;
+import org.pfe.cdcconfiguration.exceptions.ConfigNotFoundException;
 import org.pfe.cdcconfiguration.repositories.WatcherConfigRepository;
 import org.pfe.cdcconfiguration.repositories.WatcherRepository;
 import org.springframework.data.domain.Page;
@@ -18,10 +19,16 @@ import java.util.List;
 public class WatcherServiceImpl implements WatcherService {
     WatcherRepository watcherRepository;
     WatcherConfigRepository watcherConfigRepository;
+
+
     @Override
-    public Watcher addNewWatcher(Watcher watcher) {
-        watcherConfigRepository.save(watcher.getConfig());
-        return watcherRepository.save(watcher);
+    public Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException {
+        if(watcher.getConfig()==null){
+            throw new ConfigNotFoundException("Configuration not found");
+        }else {
+            watcherConfigRepository.save(watcher.getConfig());
+            return watcherRepository.save(watcher);
+        }
     }
 
     @Override
