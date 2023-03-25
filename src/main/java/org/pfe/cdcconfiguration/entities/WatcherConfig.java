@@ -1,12 +1,18 @@
 package org.pfe.cdcconfiguration.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Config {
+@NoArgsConstructor @AllArgsConstructor
+public class WatcherConfig {
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String connectorClass;
@@ -21,24 +27,6 @@ public class Config {
     private String schemaHistoryInternalKafkaBootstrapServers;
     private String schemaHistoryInternalKafkaTopic;
 
-    public Config() {
-    }
-
-    public Config(Long id, String connectorClass, String tasksMax, String databaseHostname, String databasePort, String databaseUser, String databasePassword, String databaseServerId, String topicPrefix, String databaseIncludeList, String schemaHistoryInternalKafkaBootstrapServers, String schemaHistoryInternalKafkaTopic) {
-        this.id = id;
-        this.connectorClass = connectorClass;
-        this.tasksMax = tasksMax;
-        this.databaseHostname = databaseHostname;
-        this.databasePort = databasePort;
-        this.databaseUser = databaseUser;
-        this.databasePassword = databasePassword;
-        this.databaseServerId = databaseServerId;
-        this.topicPrefix = topicPrefix;
-        this.databaseIncludeList = databaseIncludeList;
-        this.schemaHistoryInternalKafkaBootstrapServers = schemaHistoryInternalKafkaBootstrapServers;
-        this.schemaHistoryInternalKafkaTopic = schemaHistoryInternalKafkaTopic;
-    }
-
     public Long getId() {
         return id;
     }
@@ -47,6 +35,7 @@ public class Config {
         this.id = id;
     }
 
+    @JsonProperty("connector.class")
     public String getConnectorClass() {
         return connectorClass;
     }
@@ -55,6 +44,7 @@ public class Config {
         this.connectorClass = connectorClass;
     }
 
+    @JsonProperty("tasks.max")
     public String getTasksMax() {
         return tasksMax;
     }
@@ -63,6 +53,7 @@ public class Config {
         this.tasksMax = tasksMax;
     }
 
+    @JsonProperty("database.hostname")
     public String getDatabaseHostname() {
         return databaseHostname;
     }
@@ -71,6 +62,7 @@ public class Config {
         this.databaseHostname = databaseHostname;
     }
 
+    @JsonProperty("database.port")
     public String getDatabasePort() {
         return databasePort;
     }
@@ -79,6 +71,7 @@ public class Config {
         this.databasePort = databasePort;
     }
 
+    @JsonProperty("database.user")
     public String getDatabaseUser() {
         return databaseUser;
     }
@@ -87,6 +80,7 @@ public class Config {
         this.databaseUser = databaseUser;
     }
 
+    @JsonProperty("databse.password")
     public String getDatabasePassword() {
         return databasePassword;
     }
@@ -95,6 +89,7 @@ public class Config {
         this.databasePassword = databasePassword;
     }
 
+    @JsonProperty("database.server.id")
     public String getDatabaseServerId() {
         return databaseServerId;
     }
@@ -103,6 +98,7 @@ public class Config {
         this.databaseServerId = databaseServerId;
     }
 
+    @JsonProperty("topic.prefix")
     public String getTopicPrefix() {
         return topicPrefix;
     }
@@ -111,6 +107,7 @@ public class Config {
         this.topicPrefix = topicPrefix;
     }
 
+    @JsonProperty("database.include.list")
     public String getDatabaseIncludeList() {
         return databaseIncludeList;
     }
@@ -119,6 +116,7 @@ public class Config {
         this.databaseIncludeList = databaseIncludeList;
     }
 
+    @JsonProperty("schema.history.internal.kafka.bootstrap.servers")
     public String getSchemaHistoryInternalKafkaBootstrapServers() {
         return schemaHistoryInternalKafkaBootstrapServers;
     }
@@ -127,6 +125,7 @@ public class Config {
         this.schemaHistoryInternalKafkaBootstrapServers = schemaHistoryInternalKafkaBootstrapServers;
     }
 
+    @JsonProperty("schema.history.internal.kafka.topic")
     public String getSchemaHistoryInternalKafkaTopic() {
         return schemaHistoryInternalKafkaTopic;
     }
