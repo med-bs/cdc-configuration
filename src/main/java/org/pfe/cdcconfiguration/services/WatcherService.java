@@ -13,6 +13,8 @@ public interface WatcherService {
     Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException;
     List<Watcher> allWatchers();
     WatcherPageDTO pageAllWatchers(int page, int size);
-    void runScript(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException;
-    void restartScript(String containerName) throws IOException, ScriptArgsNotSufficientException;
+    void runWatcherContainer(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException;
+    void restartWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
+    void pauseWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
+    void stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
 }

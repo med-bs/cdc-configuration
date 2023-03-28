@@ -54,11 +54,11 @@ public class WatcherServiceImpl implements WatcherService {
     }
 
     @Override
-    public void runScript(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException {
+    public void runWatcherContainer(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException {
         if(watcherRunSriptDTO.getContainerName().trim().isEmpty()||watcherRunSriptDTO.getTopicName().trim().isEmpty()){
             throw new ScriptArgsNotSufficientException("Argument Not Sufficient");
         }else {
-            String shellFilePath = "src/main/resources/shell-script/run.sh";
+            String shellFilePath = "src/main/resources/shell-script/start.sh";
 
             List<String> commandList = new ArrayList<>();
             commandList.add(shellFilePath);
@@ -70,11 +70,43 @@ public class WatcherServiceImpl implements WatcherService {
     }
 
     @Override
-    public void restartScript(String containerName) throws IOException, ScriptArgsNotSufficientException {
+    public void restartWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
         if(containerName.trim().isEmpty()){
             throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
         }else {
             String shellFilePath = "src/main/resources/shell-script/restart.sh";
+
+            List<String> commandList = new ArrayList<>();
+            commandList.add(shellFilePath);
+            commandList.add(containerName);
+
+            String[] command = commandList.toArray(new String[0]);
+            Process process = Runtime.getRuntime().exec(command);
+        }
+    }
+
+    @Override
+    public void pauseWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
+        if(containerName.trim().isEmpty()){
+            throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
+        }else {
+            String shellFilePath = "src/main/resources/shell-script/pause.sh";
+
+            List<String> commandList = new ArrayList<>();
+            commandList.add(shellFilePath);
+            commandList.add(containerName);
+
+            String[] command = commandList.toArray(new String[0]);
+            Process process = Runtime.getRuntime().exec(command);
+        }
+    }
+
+    @Override
+    public void stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
+        if(containerName.trim().isEmpty()){
+            throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
+        }else {
+            String shellFilePath = "src/main/resources/shell-script/stop.sh";
 
             List<String> commandList = new ArrayList<>();
             commandList.add(shellFilePath);
