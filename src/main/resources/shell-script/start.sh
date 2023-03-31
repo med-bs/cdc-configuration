@@ -1,11 +1,3 @@
 #!/bin/bash
 
-echo "start"
-sleep 5
-echo $1
-sleep 5
-echo $2
-sleep 5
-echo $0
-echo "fin"
-
+docker run -d -it --name $1 --link zookeeper:zookeeper --link kafka:kafka quay.io/debezium/kafka:2.1 watch-topic -a -k $2
