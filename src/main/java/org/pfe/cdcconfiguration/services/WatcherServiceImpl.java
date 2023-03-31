@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -47,6 +48,11 @@ public class WatcherServiceImpl implements WatcherService {
     }
 
     @Override
+    public Optional<Watcher> getWatcherByName(String containerName){
+        return watcherRepository.findById(containerName);
+    }
+
+    @Override
     public WatcherPageDTO pageAllWatchers(int page, int size) {
         WatcherPageDTO watcherPageDTO = new WatcherPageDTO();
         Page<Watcher> watcherPage = watcherRepository.findAll(PageRequest.of(page,size));
@@ -60,7 +66,7 @@ public class WatcherServiceImpl implements WatcherService {
     }
 
     @Override
-    public void runWatcherContainer(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException {
+    public String runWatcherContainer(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException {
         if(watcherRunSriptDTO.getContainerName().trim().isEmpty()||watcherRunSriptDTO.getTopicName().trim().isEmpty()){
             throw new ScriptArgsNotSufficientException("Argument Not Sufficient");
         }else {
@@ -79,12 +85,13 @@ public class WatcherServiceImpl implements WatcherService {
 
             String[] command = commandList.toArray(new String[0]);
             Runtime.getRuntime().exec(command);
+            return getWatcherContainerStatus(watcherRunSriptDTO.getContainerName());
         }
     }
 
 
     @Override
-    public void stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
+    public String stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
         if(containerName.trim().isEmpty()){
             throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
         }else {
@@ -96,6 +103,7 @@ public class WatcherServiceImpl implements WatcherService {
 
             String[] command = commandList.toArray(new String[0]);
             Runtime.getRuntime().exec(command);
+            return getWatcherContainerStatus(containerName);
         }
     }
 
@@ -113,12 +121,7 @@ public class WatcherServiceImpl implements WatcherService {
             String[] command = commandList.toArray(new String[0]);
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String status="";
-            while (reader.readLine() != null) {
-                status = reader.readLine();
-                System.out.println(status);
-            }
-            return status;
+            return reader.readLine();
         }
     }
 

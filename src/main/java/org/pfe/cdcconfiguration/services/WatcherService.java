@@ -9,12 +9,14 @@ import org.pfe.cdcconfiguration.exceptions.WatcherAlreadyexistsException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface WatcherService {
     Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException, WatcherAlreadyexistsException;
+    Optional<Watcher> getWatcherByName(String containerName);
     List<Watcher> allWatchers();
     WatcherPageDTO pageAllWatchers(int page, int size);
-    void runWatcherContainer(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException;
-    void stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
+    String runWatcherContainer(WatcherRunSriptDTO watcherRunSriptDTO) throws IOException, ScriptArgsNotSufficientException;
+    String stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
     String getWatcherContainerStatus(String containerName) throws IOException, ScriptArgsNotSufficientException;
 }
