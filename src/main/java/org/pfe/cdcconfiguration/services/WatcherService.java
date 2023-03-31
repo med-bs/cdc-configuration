@@ -17,4 +17,5 @@ public interface WatcherService {
     void restartWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
     void pauseWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
     void stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException;
+    String getWatcherContainerStatus(String containerName) throws IOException, ScriptArgsNotSufficientException;
 }

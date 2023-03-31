@@ -117,5 +117,10 @@ public class WatcherServiceImpl implements WatcherService {
         }
     }
 
+    @Override
+    public String getWatcherContainerStatus(String containerName) throws IOException, ScriptArgsNotSufficientException {
+        return "";
+    }
+
 
 }
