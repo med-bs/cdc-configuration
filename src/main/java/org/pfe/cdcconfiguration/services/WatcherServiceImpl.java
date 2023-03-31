@@ -6,6 +6,7 @@ import org.pfe.cdcconfiguration.dtos.WatcherRunSriptDTO;
 import org.pfe.cdcconfiguration.entities.Watcher;
 import org.pfe.cdcconfiguration.exceptions.ConfigNotFoundException;
 import org.pfe.cdcconfiguration.exceptions.ScriptArgsNotSufficientException;
+import org.pfe.cdcconfiguration.exceptions.WatcherAlreadyexistsException;
 import org.pfe.cdcconfiguration.repositories.WatcherConfigRepository;
 import org.pfe.cdcconfiguration.repositories.WatcherRepository;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +29,13 @@ public class WatcherServiceImpl implements WatcherService {
 
 
     @Override
-    public Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException {
+    public Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException, WatcherAlreadyexistsException {
         if(watcher.getConfig()==null){
             throw new ConfigNotFoundException("Configuration not found");
         }else {
+            if(watcherRepository.existsById(watcher.getName())){
+                throw new WatcherAlreadyexistsException(watcher.getName()+" already exists");
+            }
             watcherConfigRepository.save(watcher.getConfig());
             return watcherRepository.save(watcher);
         }
@@ -58,48 +64,24 @@ public class WatcherServiceImpl implements WatcherService {
         if(watcherRunSriptDTO.getContainerName().trim().isEmpty()||watcherRunSriptDTO.getTopicName().trim().isEmpty()){
             throw new ScriptArgsNotSufficientException("Argument Not Sufficient");
         }else {
-            String shellFilePath = "src/main/resources/shell-script/start.sh";
+            String shellFilePath = "src/main/resources/shell-script/";
+            String status = getWatcherContainerStatus(watcherRunSriptDTO.getContainerName());
+
+            if (status.equals("not found")) {
+                shellFilePath += "start.sh";
+            } else {
+                shellFilePath += "restart.sh";
+            }
 
             List<String> commandList = new ArrayList<>();
             commandList.add(shellFilePath);
             commandList.addAll(watcherRunSriptDTO.toArray());
 
             String[] command = commandList.toArray(new String[0]);
-            Process process = Runtime.getRuntime().exec(command);
+            Runtime.getRuntime().exec(command);
         }
     }
 
-    @Override
-    public void restartWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
-        if(containerName.trim().isEmpty()){
-            throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
-        }else {
-            String shellFilePath = "src/main/resources/shell-script/restart.sh";
-
-            List<String> commandList = new ArrayList<>();
-            commandList.add(shellFilePath);
-            commandList.add(containerName);
-
-            String[] command = commandList.toArray(new String[0]);
-            Process process = Runtime.getRuntime().exec(command);
-        }
-    }
-
-    @Override
-    public void pauseWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
-        if(containerName.trim().isEmpty()){
-            throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
-        }else {
-            String shellFilePath = "src/main/resources/shell-script/pause.sh";
-
-            List<String> commandList = new ArrayList<>();
-            commandList.add(shellFilePath);
-            commandList.add(containerName);
-
-            String[] command = commandList.toArray(new String[0]);
-            Process process = Runtime.getRuntime().exec(command);
-        }
-    }
 
     @Override
     public void stopWatcherContainer(String containerName) throws IOException, ScriptArgsNotSufficientException {
@@ -113,14 +95,31 @@ public class WatcherServiceImpl implements WatcherService {
             commandList.add(containerName);
 
             String[] command = commandList.toArray(new String[0]);
-            Process process = Runtime.getRuntime().exec(command);
+            Runtime.getRuntime().exec(command);
         }
     }
 
     @Override
     public String getWatcherContainerStatus(String containerName) throws IOException, ScriptArgsNotSufficientException {
-        return "";
-    }
+        if(containerName.trim().isEmpty()){
+            throw new ScriptArgsNotSufficientException("Watcher Name Not Found");
+        }else {
+            String shellFilePath = "src/main/resources/shell-script/status.sh";
 
+            List<String> commandList = new ArrayList<>();
+            commandList.add(shellFilePath);
+            commandList.add(containerName);
+
+            String[] command = commandList.toArray(new String[0]);
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String status="";
+            while (reader.readLine() != null) {
+                status = reader.readLine();
+                System.out.println(status);
+            }
+            return status;
+        }
+    }
 
 }
