@@ -10,9 +10,7 @@ import javax.persistence.*;
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Watcher {
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id
     private String name;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String tableToListen;
