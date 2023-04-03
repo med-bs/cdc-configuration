@@ -95,9 +95,10 @@ public class WatcherServiceImpl implements WatcherService {
 
             String stat = getWatcherContainerStatus(watcherRunSriptDTO.getContainerName());
             Optional<Watcher> watcher = watcherRepository.findById(watcherRunSriptDTO.getContainerName());
-            watcher.get().setStatus(stat);
-            watcherRepository.save(watcher.get());
-
+            if(watcher.isPresent()){
+                watcher.get().setStatus(status);
+                watcherRepository.save(watcher.get());
+            }
             return stat;
         }
     }
@@ -122,8 +123,10 @@ public class WatcherServiceImpl implements WatcherService {
 
             String status = getWatcherContainerStatus(containerName);
             Optional<Watcher> watcher = watcherRepository.findById(containerName);
-            watcher.get().setStatus(status);
-            watcherRepository.save(watcher.get());
+            if(watcher.isPresent()){
+                watcher.get().setStatus(status);
+                watcherRepository.save(watcher.get());
+            }
             return status;
         }
     }
