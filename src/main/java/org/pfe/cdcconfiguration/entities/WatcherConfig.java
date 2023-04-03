@@ -80,7 +80,7 @@ public class WatcherConfig {
         this.databaseUser = databaseUser;
     }
 
-    @JsonProperty("databse.password")
+    @JsonProperty("database.password")
     public String getDatabasePassword() {
         return databasePassword;
     }

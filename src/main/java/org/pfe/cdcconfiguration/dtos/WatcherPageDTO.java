@@ -9,6 +9,7 @@ import java.util.List;
 public class WatcherPageDTO {
     private int currentPage;
     private int totalPages;
+    private int totalData;
     private int pageSize;
-    private List<Watcher> watchers;
+    private List<Watcher> data;
 }
