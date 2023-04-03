@@ -37,6 +37,7 @@ public class WatcherServiceImpl implements WatcherService {
             if(watcherRepository.existsById(watcher.getName())){
                 throw new WatcherAlreadyexistsException(watcher.getName()+" already exists");
             }
+            watcher.setStatus("not found");
             watcherConfigRepository.save(watcher.getConfig());
             return watcherRepository.save(watcher);
         }
@@ -57,9 +58,10 @@ public class WatcherServiceImpl implements WatcherService {
         WatcherPageDTO watcherPageDTO = new WatcherPageDTO();
         Page<Watcher> watcherPage = watcherRepository.findAll(PageRequest.of(page,size));
 
-        watcherPageDTO.setWatchers(watcherPage.getContent());
+        watcherPageDTO.setData(watcherPage.getContent());
         watcherPageDTO.setCurrentPage(page);
         watcherPageDTO.setPageSize(size);
+        watcherPageDTO.setTotalData(watcherPage.getNumberOfElements());
         watcherPageDTO.setTotalPages(watcherPage.getTotalPages());
 
         return watcherPageDTO;
@@ -84,8 +86,18 @@ public class WatcherServiceImpl implements WatcherService {
             commandList.addAll(watcherRunSriptDTO.toArray());
 
             String[] command = commandList.toArray(new String[0]);
-            Runtime.getRuntime().exec(command);
-            return getWatcherContainerStatus(watcherRunSriptDTO.getContainerName());
+
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            while (reader.readLine()!=null);
+
+            String stat=getWatcherContainerStatus(watcherRunSriptDTO.getContainerName());
+            Optional<Watcher> watcher = watcherRepository.findById(watcherRunSriptDTO.getContainerName());
+            watcher.get().setStatus(stat);
+            watcherRepository.save(watcher.get());
+
+            return stat;
         }
     }
 
@@ -102,8 +114,16 @@ public class WatcherServiceImpl implements WatcherService {
             commandList.add(containerName);
 
             String[] command = commandList.toArray(new String[0]);
-            Runtime.getRuntime().exec(command);
-            return getWatcherContainerStatus(containerName);
+            Process process = Runtime.getRuntime().exec(command);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            while (reader.readLine()!=null);
+
+            String status=getWatcherContainerStatus(containerName);
+            Optional<Watcher> watcher = watcherRepository.findById(containerName);
+            watcher.get().setStatus(status);
+            watcherRepository.save(watcher.get());
+            return status;
         }
     }
 
@@ -121,7 +141,13 @@ public class WatcherServiceImpl implements WatcherService {
             String[] command = commandList.toArray(new String[0]);
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            return reader.readLine();
+
+            String status=reader.readLine();
+            Optional<Watcher> watcher = watcherRepository.findById(containerName);
+            watcher.get().setStatus(status);
+            watcherRepository.save(watcher.get());
+
+            return status;
         }
     }
 
