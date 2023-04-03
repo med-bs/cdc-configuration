@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WatcherService {
-    Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException, WatcherAlreadyexistsException;
+    Watcher addNewWatcher(Watcher watcher) throws ConfigNotFoundException, WatcherAlreadyexistsException, IOException, ScriptArgsNotSufficientException;
     Optional<Watcher> getWatcherByName(String containerName);
     List<Watcher> allWatchers();
     WatcherPageDTO pageAllWatchers(int page, int size);

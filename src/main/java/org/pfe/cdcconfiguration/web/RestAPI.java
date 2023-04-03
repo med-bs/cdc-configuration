@@ -40,10 +40,12 @@ public class RestAPI {
 
     @PostMapping("/addwatcher")
     public ResponseEntity<?> saveConfig(@RequestBody Watcher watcher) {
-       try {
+        try {
             return ResponseEntity.ok(watcherService.addNewWatcher(watcher));
-        } catch (ConfigNotFoundException | WatcherAlreadyexistsException e) {
+        } catch (ConfigNotFoundException | WatcherAlreadyexistsException | ScriptArgsNotSufficientException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
     }
 
