@@ -13,7 +13,6 @@ public class Watcher {
     @Id
     private String name;
     private String kafka_topic;
-    private String status;
     @OneToOne(fetch = FetchType.EAGER)
     private WatcherConfig config;
 }

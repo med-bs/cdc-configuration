@@ -2,16 +2,13 @@ package org.pfe.cdcconfiguration.web;
 
 import lombok.AllArgsConstructor;
 import org.pfe.cdcconfiguration.dtos.WatcherPageDTO;
-import org.pfe.cdcconfiguration.dtos.WatcherRunSriptDTO;
 import org.pfe.cdcconfiguration.entities.Watcher;
 import org.pfe.cdcconfiguration.exceptions.ConfigNotFoundException;
-import org.pfe.cdcconfiguration.exceptions.ScriptArgsNotSufficientException;
 import org.pfe.cdcconfiguration.exceptions.WatcherAlreadyexistsException;
 import org.pfe.cdcconfiguration.services.WatcherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,52 +35,21 @@ public class RestAPI {
         return ResponseEntity.ok(watcherService.getWatcherByName(name));
     }
 
+    @DeleteMapping("/watchers/{name}")
+    public ResponseEntity<?> deleteWatchers(@PathVariable String name) {
+        try {
+            watcherService.deleteWatcher(name);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error",e.getMessage()));
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/addwatcher")
     public ResponseEntity<?> saveConfig(@RequestBody Watcher watcher) {
         try {
             return ResponseEntity.ok(watcherService.addNewWatcher(watcher));
-        } catch (ConfigNotFoundException | WatcherAlreadyexistsException | ScriptArgsNotSufficientException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/runwatcher")
-    public ResponseEntity<?> runWatcher(@RequestBody WatcherRunSriptDTO watcherRunSriptDTO) {
-        try {
-            Map<String, String> response = Map.of("name", watcherRunSriptDTO.getContainerName()
-                    , "status", watcherService.runWatcherContainer(watcherRunSriptDTO));
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-        } catch (ScriptArgsNotSufficientException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @PutMapping("/stopwatcher")
-    public ResponseEntity<?> stopWatcher(@RequestBody String containerName) {
-        try {
-            Map<String, String> response = Map.of("name", containerName
-                    , "status", watcherService.stopWatcherContainer(containerName));
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-        } catch (ScriptArgsNotSufficientException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @GetMapping("/watcherstatus/{containerName}")
-    public ResponseEntity<?> getWatcherStatus(@PathVariable String containerName) {
-        try {
-            Map<String, String> response = Map.of("name", containerName
-                    , "status", watcherService.getWatcherContainerStatus(containerName));
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-        } catch (ScriptArgsNotSufficientException e) {
+        } catch (ConfigNotFoundException | WatcherAlreadyexistsException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
